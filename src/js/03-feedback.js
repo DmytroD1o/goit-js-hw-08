@@ -3,21 +3,28 @@ import '../css/03-feedback.css'
 
 
    const form = document.querySelector('.feedback-form');
-    
+   const emailInput = document.querySelector('input[name="email"]'); /// це доступ до value
+   const messageTextarea = document.querySelector('textarea[name="message"]');
+
+
 
 form.addEventListener('input', throttle(onFormInput, 500))
 form.addEventListener('submit', onFormSubmit)
 
-fillAllTextFields();
 
+let userData = {};
 
-const userData = {};
+function onFormInput () {
 
-function onFormInput (evt) {
-
-userData[evt.target.name] = evt.target.value;
+    
+userData = {
+    email: form.elements.email.value,
+    message: form.elements.message.value
+}
 
 localStorage.setItem("feedback-form-state", JSON.stringify(userData));
+
+return userData;
 
 }
 
@@ -25,37 +32,26 @@ localStorage.setItem("feedback-form-state", JSON.stringify(userData));
 function onFormSubmit (evt) {
     evt.preventDefault()
 
-
+if(form.elements.email.value === ''  || form.elements.message.value === '') {
+    return alert ('Заповни усі поля!')
+}
+console.log(localStorage.getItem("feedback-form-state"));
     evt.currentTarget.reset();
     localStorage.removeItem("feedback-form-state");
 
-    console.log(userData);
-
 }
-
-
-function fillAllTextFields () {
-
 
     const savedData = localStorage.getItem("feedback-form-state")
 
+checkedForm()
 
-if (savedData) {
-    const parsedData = JSON.parse(savedData);
-
-    const emailInput = document.querySelector('input[name="email"]'); /// це доступ до value
-    const messageTextarea = document.querySelector('textarea[name="message"]');
-
-    if (parsedData.email) {
-        emailInput.value = parsedData.email;
+function checkedForm() {
+    if (savedData) {
+      const parsedData = JSON.parse(savedData);
+      form.elements.email.value = parsedData.email ?? '';
+      form.elements.message.value = parsedData.message ?? '';
     }
-
-    if (parsedData.message) {
-        messageTextarea.value = parsedData.message;
-    }
-}
-
-}
+  }
 
     
 
